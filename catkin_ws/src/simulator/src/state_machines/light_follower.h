@@ -36,6 +36,7 @@ int light_follower(float intensity,float *light_values,movement *movements,float
  {
  	for(i = 1; i < 8; i++) 
  	{
+		printf("\n **************** Light values %f******************************\n", light_values[i]);
 	    if( light_values[i] > light_values[sensor])
 		sensor = i;
  	}

@@ -347,8 +347,6 @@ int quantize_laser(float *observations, int size, float laser_value  )
     return iz + de ;
 }
 
-
-
 void laserCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
 {
     /*

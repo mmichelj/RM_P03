@@ -17,7 +17,6 @@
 #include "motion_planner_utilities.h"
 #include "../state_machines/light_follower.h"
 #include "../state_machines/sm_avoidance.h"
-#include "../state_machines/sm_avoidance_modified.h"
 #include "../state_machines/sm_avoidance_destination.h"
 #include "../state_machines/sm_destination.h"
 #include "../state_machines/user_sm.h"
@@ -53,8 +52,6 @@ int main(int argc ,char **argv)
     int cta_steps;
     int flg_result;
     int flg_noise=0;
-
-    int q_inputs2=0;
     
     float result;
     float final_x;
@@ -67,17 +64,6 @@ int main(int argc ,char **argv)
     
     char path[100];
     char object_name[20];
-
-    /*float pos_history[2][10]={
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-    };*/
-
-    float pos_history[2]={0,0};
-    float diferencia_x=0;
-    float diferencia_y=0;
-    int cont_similar=0;
-    bool obstacle_flag=0;
 
 
     movement movements;
@@ -299,48 +285,13 @@ int main(int argc ,char **argv)
             case 9:
                 //Campos potenciales con evasion de obstaculos
 
-                //q_inputs2=quantize_laser_user(lidar_readings,params.laser_num_sensors,params.laser_value);
-
                 if(flagOnce)
                 {
                     est_sig = 0;
                     flagOnce = 0;
                 }
-
-                //Si no ha cambiado su posición más de .1 en x Y y desde hace 10 iteraciones, salir del obstaculo
-
-                diferencia_x=fabs(pos_history[0]-params.robot_x);
-                diferencia_y=fabs(pos_history[1]-params.robot_y);
-
-                pos_history[0]=params.robot_x;
-                pos_history[1]=params.robot_y;
-
-                printf("diferencias: %f %f %d",diferencia_x,diferencia_y,cont_similar);
-
-                if(cont_similar<10){
-                    if(diferencia_x<0.03 && diferencia_y<0.03){
-                    cont_similar++;
-                    } else{
-                    cont_similar=0;
-                    }
-                    flg_result = campos_potenciales(intensity, light_readings,&movements,max_advance,max_turn_angle,lidar_readings,params.laser_num_sensors,params.laser_value,params.laser_origin,params.laser_range);
-                }
-
-                if(cont_similar>=10 && cont_similar<20){
-                    sm_avoid_obstacles_m(q_inputs,&movements,&est_sig,params.robot_max_advance ,params.robot_turn_angle,12);
-                    cont_similar++;
-                }
-
-                if(cont_similar==20){
-                    cont_similar=0;
-                    est_sig=0;
-                }
-
+                flg_result = campos_potenciales(intensity, light_readings,&movements,max_advance,max_turn_angle);
                 if(flg_result == 1) stop();
-
-                //flg_result = campos_potenciales(intensity, light_readings,&movements,max_advance,max_turn_angle,lidar_readings,params.laser_num_sensors,params.laser_value);
-                //flg_result = campos_potenciales(intensity, light_readings,&movements,max_advance,max_turn_angle,lidar_readings,params.laser_num_sensors,params.laser_value,params.laser_origin,params.laser_range);
-                //if(flg_result == 1) stop();
 
                 break;
 
